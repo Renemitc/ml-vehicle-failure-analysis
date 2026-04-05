@@ -42,6 +42,7 @@ df_limpio = df.copy()
 #print(df_limpio["ENGINE_LOAD"].head())    # Validación de salida
 #print(df_limpio["ENGINE_LOAD"].isnull().sum())
 
+# Limpiar y cambiar porcentajes a decimales de columnas (estos datos son valores tipo string, usan "%" y ",")
 def limpiar_porcentaje(col):
     return (
         col.astype(str)
@@ -69,7 +70,7 @@ print(df_limpio.isnull().sum())
 print("Shape final:", df_limpio.shape)
 
 # Convertir el DF limpio a un archivo CSV
-df_limpio.to_csv("data/processed/exp1_14drivers_14cars_dailyRoutes_clean.csv", index=False)
+df_limpio.to_csv("data/processed/exp1_14drivers_14cars_dailyRoutes_cleanENG_RPM.csv", index=False)
 
 """
 # Data splitting
