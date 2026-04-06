@@ -48,7 +48,6 @@ columnas_utiles = [         # Análisis inicial
 df_limpio = df.copy()
 
 # Sección de corrección de valores columnas en particular
-
 #df_limpio["ENGINE_LOAD"] = df_limpio["ENGINE_LOAD"].astype(str)   # Limpiar columna
 #df_limpio["ENGINE_LOAD"] = df_limpio["ENGINE_LOAD"].str.replace("%", "", regex=False)    # Quitar %
 #df_limpio["ENGINE_LOAD"] = df_limpio["ENGINE_LOAD"].str.replace(",", ".", regex=False)   # Cambiar coma por punto
@@ -62,11 +61,18 @@ def limpiar_porcentaje(col):
     return (
         col.astype(str)
         .str.replace("%", "", regex=False)
+        .str.replace(" ", "", regex=False)
         .str.replace(",", ".", regex=False)
     )
 
 df_limpio["ENGINE_LOAD"] = limpiar_porcentaje(df_limpio["ENGINE_LOAD"])
 df_limpio["ENGINE_LOAD"] = pd.to_numeric(df_limpio["ENGINE_LOAD"], errors="coerce")
+df_limpio["ENGINE_LOAD"] = df_limpio["ENGINE_LOAD"] / 100
+df_limpio["THROTTLE_POS"] = limpiar_porcentaje(df_limpio["THROTTLE_POS"])
+df_limpio["THROTTLE_POS"] = pd.to_numeric(df_limpio["THROTTLE_POS"], errors="coerce")
+df_limpio["THROTTLE_POS"] = df_limpio["THROTTLE_POS"] / 100
+
+
 
 for col in columnas_utiles:     # Convertir a numéricas las columnas importantes
     df_limpio[col] = pd.to_numeric(df_limpio[col], errors="coerce")
@@ -92,7 +98,7 @@ os.makedirs(output_path, exist_ok=True)    # Crear carpeta processed si no exist
 # Ruta completa y nombre del archivo a guardar
 file_output = os.path.join(
     output_path,
-    "exp1_14drivers_14cars_dailyRoutes_cleanENG_RPM.csv"
+    "exp1_14drivers_14cars_dailyRoutes_cleanTHROTTLE_POS.csv"
 )
 
 # Guardar
