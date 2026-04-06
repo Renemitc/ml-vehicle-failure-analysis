@@ -1,8 +1,22 @@
 #import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import os
 
 # Data exploration and validation
-df=pd.read_csv("/data/raw/exp1_14drivers_14cars_dailyRoutes.csv", low_memory=False)
+#df=pd.read_csv("/data/raw/exp1_14drivers_14cars_dailyRoutes.csv", low_memory=False)
+
+# Data exploration and validation
+# Usar una ruta dinámica para lectura del archivo raíz, para que funcione en cualquier PC
+base_path = os.path.dirname(os.path.dirname(__file__))  # Subir de /src a raíz del proyecto
+file_path = os.path.join(
+    base_path,
+    "data",
+    "raw",
+    "exp1_14drivers_14cars_dailyRoutes.csv"
+)
+
+df = pd.read_csv(file_path, low_memory=False)
+
 print(df.head())
 print(df.shape)    # Ver tamaño
 print(df.columns)  # Ver columnas
@@ -63,14 +77,26 @@ df_limpio = df_limpio.bfill()  # Relleno hacia atrás
 #    df_limpio[col].fillna(df_limpio[col].mean(), inplace=True)
 
 print("Shape original:", df.shape)
-
 print("Nulos finales:")    # Validación
 print(df_limpio.isnull().sum())
-
 print("Shape final:", df_limpio.shape)
 
 # Convertir el DF limpio a un archivo CSV
-df_limpio.to_csv("data/processed/exp1_14drivers_14cars_dailyRoutes_cleanENG_RPM.csv", index=False)
+#df_limpio.to_csv("data/processed/exp1_14drivers_14cars_dailyRoutes_cleanENG_RPM.csv", index=False)
+
+#Construye la ruta de la carpeta donde se guarda el archivo procesado.
+output_path = os.path.join(base_path, "data", "processed")
+os.makedirs(output_path, exist_ok=True)    # Crear carpeta processed si no existe
+
+# Ruta completa y nombre del archivo a guardar
+file_output = os.path.join(
+    output_path,
+    "exp1_14drivers_14cars_dailyRoutes_cleanENG_RPM.csv"
+)
+
+# Guardar
+df_limpio.to_csv(file_output, index=False)
+print("Archivo guardado en:", file_output)    # Con este cogio confirmo
 
 """
 # Data splitting
