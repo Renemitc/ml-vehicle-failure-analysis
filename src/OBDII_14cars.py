@@ -88,6 +88,13 @@ print("Nulos finales:")    # Validación
 print(df_limpio.isnull().sum())
 print("Shape final:", df_limpio.shape)
 
+# Validación del preprocesamiento
+print("\n=== VALIDACIÓN DE PREPROCESAMIENTO ===")
+print("Registros totales:", df_limpio.shape[0])
+print("Columnas totales:", df_limpio.shape[1])
+print("Valores nulos restantes:", df_limpio.isnull().sum().sum())
+
+
 # Convertir el DF limpio a un archivo CSV
 #df_limpio.to_csv("data/processed/exp1_14drivers_14cars_dailyRoutes_cleanENG_RPM.csv", index=False)
 
