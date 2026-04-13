@@ -126,7 +126,7 @@ columnas_numericas = [
 for col in columnas_numericas:     # Convertir a numéricas las columnas importantes
     df_limpio[col] = pd.to_numeric(df_limpio[col], errors="coerce")
 
-#
+
 # 7. Ingeniería de features DTC
 # DTC_NUMBER -> features interpretables
 df_limpio["MIL_ON"] = df_limpio["DTC_NUMBER"].apply(extraer_mil_on)
