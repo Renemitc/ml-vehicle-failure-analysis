@@ -153,11 +153,11 @@ for codigo in top_codigos:
     df_limpio[nueva_col] = df_limpio["DTC_LIST"].apply(lambda lista: 1 if codigo in lista else 0)
 
 
-# 8. Relleno solo en columnas numéricas
-cols_num = df_limpio.select_dtypes(include=["number"]).columns
-df_limpio[cols_num] = df_limpio[cols_num].ffill().bfill()    # Relleno hacia adelante y atrás
+# 8. Relleno solo en sensores numéricos
+columnas_sensores_modelo = columnas_porcentaje + columnas_numericas
+df_limpio[columnas_sensores_modelo] = df_limpio[columnas_sensores_modelo].ffill().bfill()
 
-# 9. Realizo validación
+# 9. Realizo validación general
 print("\n=== VALIDACIÓN DE PREPROCESAMIENTO ===")
 print("Registros totales:", df_limpio.shape[0])
 print("Columnas totales:", df_limpio.shape[1])
@@ -169,13 +169,96 @@ print(df_limpio.isnull().sum())
 print("\nTop códigos DTC detectados:")
 print(todos_los_codigos.value_counts().head(10))
 
-# 10. Se construye la ruta de la carpeta donde se guarda el archivo procesado.
+# 10. EDA del TARGET (Análisis exploratorio de datos)
+print("\n=== DISTRIBUCIÓN TARGET ===")
+print(df_limpio["HAS_TROUBLE_CODE"].value_counts())
+
+# Definiendo explícitamente "X" y "y"
+print("\nProporción:")
+print(df_limpio["HAS_TROUBLE_CODE"].value_counts(normalize=True))
+
+# Variables de entrada (solo sensores OBD-II)
+columnas_input_modelo = columnas_porcentaje + columnas_numericas
+X = df_limpio[columnas_input_modelo].copy()
+
+
+# Validar nulos solo dentro de X
+print("\n=== NULOS EN X ===")
+print(X.isnull().sum())
+
+print("\n=== COLUMNAS 100% NULAS EN X ===")
+print(X.columns[X.isnull().all()].tolist())
+
+# Eliminar columnas completamente vacías en X
+X = X.dropna(axis=1, how="all")
+
+print("\n=== SHAPE X DESPUÉS DE ELIMINAR COLUMNAS 100% NULAS ===")
+print(X.shape)
+
+print("\n=== COLUMNAS FINALES DE X ===")
+print(X.columns.tolist())
+
+
+
+# Variable objetivo TARGET
+y = df_limpio["HAS_TROUBLE_CODE"].copy()
+
+print("\n=== VALIDACIÓN DE MODELADO ===")
+print("Shape X:", X.shape)
+print("Shape y:", y.shape)
+print("\nColumnas de X:")
+print(X.columns.tolist())
+
+print("\nDistribución del target:")
+print(y.value_counts())
+
+print("\nProporción del target:")
+print(y.value_counts(normalize=True))
+
+# Bloque de columnas final para X
+### 1. Definir columnas finales (solo sensores reales)
+columnas_finales = [
+    "ENGINE_LOAD",
+    "THROTTLE_POS",
+    "FUEL_LEVEL",
+    "TIMING_ADVANCE",
+    "ENGINE_COOLANT_TEMP",
+    "AMBIENT_AIR_TEMP",
+    "ENGINE_RPM",
+    "INTAKE_MANIFOLD_PRESSURE",
+    "MAF",
+    "AIR_INTAKE_TEMP",
+    "SPEED",
+    "BAROMETRIC_PRESSURE(KPA)"
+]
+
+### 2. Crear X_final
+X_final = df_limpio[columnas_finales].copy()
+
+### 3. Validar
+print("\n=== X FINAL ===")
+print("Shape:", X_final.shape)
+print("Columnas:", X_final.columns.tolist())
+
+### 4. Realizar correlación con TARGET
+print("\n=== CORRELACIÓN CON TARGET ===")
+correlaciones = X_final.copy()
+correlaciones["TARGET"] = y
+corr_matrix = correlaciones.corr()
+
+print(corr_matrix["TARGET"].sort_values(ascending=False))
+
+print("\n=== VARIANZA ===")
+print(X_final.var().sort_values())
+
+
+# 11. Se construye la ruta de la carpeta donde se guarda el archivo procesado.
 output_path = os.path.join(base_path, "data", "processed")
 os.makedirs(output_path, exist_ok=True)    # Crear carpeta processed si no existe
 
 file_output = os.path.join(    # Ruta completa y nombre del archivo a guardar
     output_path,
-    "exp1_14drivers_14cars_dailyRoutes_clean_with_dtc_features.csv"
+    "exp1_14drivers_14cars_dailyRoutes_clean_with_dtc_featuresv2.csv"
 )
 
 df_limpio.to_csv(file_output, index=False)
