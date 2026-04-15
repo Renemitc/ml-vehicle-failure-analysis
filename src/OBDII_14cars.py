@@ -251,7 +251,50 @@ print(corr_matrix["TARGET"].sort_values(ascending=False))
 print("\n=== VARIANZA ===")
 print(X_final.var().sort_values())
 
+# ================================
+# LAB III — PREPARACIÓN FINAL
+# ================================
 
+X = X_final.copy()
+y = df_limpio["HAS_TROUBLE_CODE"].copy()
+
+print("\n=== DATASET FINAL PARA LAB III ===")
+print("Shape X:", X.shape)
+print("Shape y:", y.shape)
+
+# ================================
+# LAB III — FEATURE SELECTION
+# ================================
+
+# Crear dataframe para correlación con target
+df_fs = X.copy()
+df_fs["TARGET"] = y
+
+corr_matrix = df_fs.corr()
+
+# Ordenar por importancia (valor absoluto)
+corr_target = corr_matrix["TARGET"].drop("TARGET").abs().sort_values(ascending=False)
+
+print("\n=== IMPORTANCIA POR CORRELACIÓN ===")
+print(corr_target)
+
+
+# Selección automática por umbral
+umbral = 0.05
+
+columnas_seleccionadas = corr_target[corr_target > umbral].index.tolist()
+
+print("\nColumnas seleccionadas:")
+print(columnas_seleccionadas)
+
+# Nuevo dataset reducido
+X_selected = X[columnas_seleccionadas].copy()
+
+print("\nShape después de selección:", X_selected.shape)
+
+
+
+"""
 # 11. Se construye la ruta de la carpeta donde se guarda el archivo procesado.
 output_path = os.path.join(base_path, "data", "processed")
 os.makedirs(output_path, exist_ok=True)    # Crear carpeta processed si no existe
@@ -271,7 +314,7 @@ print("\nArchivo guardado en:", file_output)   # Con este codigo confirmo
 
 
 
-"""
+
 # Data splitting
 from sklearn.model_selection import train_test_split   # Dejar el split como preparación general
 
