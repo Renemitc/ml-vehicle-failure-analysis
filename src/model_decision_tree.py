@@ -17,7 +17,6 @@ file_path = os.path.join(
     "processed",
     "dataset_model_ready.csv"
 )
-
 df = pd.read_csv(file_path, low_memory=False)
 
 

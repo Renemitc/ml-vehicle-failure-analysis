@@ -60,7 +60,7 @@ print(classification_report(y_test, y_pred))
 importancias = pd.Series(model.feature_importances_, index=X.columns)
 importancias = importancias.sort_values(ascending=False)
 
-print("\n=== IMPORTANCIA DE VARIABLES RELIEF ALGORITHMS ===")
+print("\n=== IMPORTANCIA DE VARIABLES RELIEF ALGORITHM ===")
 print(importancias)
 
 
