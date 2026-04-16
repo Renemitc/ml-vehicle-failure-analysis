@@ -218,18 +218,18 @@ print(y.value_counts(normalize=True))
 # Bloque de columnas final para X
 ### 1. Definir columnas finales (solo sensores reales)
 columnas_finales = [
-    "ENGINE_LOAD",
-    "THROTTLE_POS",
-    "FUEL_LEVEL",
-    "TIMING_ADVANCE",
-    "ENGINE_COOLANT_TEMP",
-    "AMBIENT_AIR_TEMP",
-    "ENGINE_RPM",
-    "INTAKE_MANIFOLD_PRESSURE",
-    "MAF",
-    "AIR_INTAKE_TEMP",
-    "SPEED",
-    "BAROMETRIC_PRESSURE(KPA)"
+    #"ENGINE_LOAD",
+    "THROTTLE_POS", #ok
+    "FUEL_LEVEL", #ok
+    "TIMING_ADVANCE", #ok
+    "ENGINE_COOLANT_TEMP", #ok
+    #"AMBIENT_AIR_TEMP",
+    #"ENGINE_RPM",
+    "INTAKE_MANIFOLD_PRESSURE", #ok
+    "MAF", #ok
+    "AIR_INTAKE_TEMP", #ok
+    #"SPEED,
+    "BAROMETRIC_PRESSURE(KPA)" #ok
 ]
 
 ### 2. Crear X_final
@@ -293,17 +293,30 @@ X_selected = X[columnas_seleccionadas].copy()
 print("\nShape después de selección:", X_selected.shape)
 
 
+# ================================
+# DATASET FINAL PARA MODELADO
+# ================================
+X = X_selected.copy()
+#df_model = X_selected.copy()
 
-# 11. Se construye la ruta de la carpeta donde se guarda el archivo procesado.
+print("\n=== DATASET FINAL PARA LAB III ===")
+print("Shape X final:", X.shape)
+print("Columnas finales:", X.columns.tolist())
+
+df_model = X.copy()
+df_model["HAS_TROUBLE_CODE"] = y
+
+# 11. Se construye la ruta de la carpeta donde se guarda el archivo procesado
+
 output_path = os.path.join(base_path, "data", "processed")
 os.makedirs(output_path, exist_ok=True)    # Crear carpeta processed si no existe
 
 file_output = os.path.join(    # Ruta completa y nombre del archivo a guardar
     output_path,
-    "exp1_14drivers_14cars_dailyRoutes_clean_dataset_final.csv"
+    "dataset_model_ready.csv"
 )
 
-df_limpio.to_csv(file_output, index=False)
+df_model.to_csv(file_output, index=False)
 print("\nArchivo guardado en:", file_output)   # Con este codigo confirmo
 
 
