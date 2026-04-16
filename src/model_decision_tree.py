@@ -5,7 +5,8 @@ import os
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn import tree
+#from sklearn import tree
+from sklearn.tree import plot_tree
 
 # 1. Carga del dataset - Exploración de datos y validación
 ### Se usa ruta dinámica para lectura del archivo raíz, para que funcione en cualquier PC
@@ -40,16 +41,15 @@ print("Test:", X_test.shape)
 
 # 4. Entrenar el modelo
 model = DecisionTreeClassifier(
-    max_depth=5,
+    max_depth=7,
+    class_weight='balanced',
     random_state=42
 )
 
 model.fit(X_train, y_train)
 
-
 # 5. Predicciones
 y_pred = model.predict(X_test)
-
 
 # 6. Evaluación - Métricas
 print("\n=== RESULTADOS DECISION TREE ===")
@@ -64,17 +64,44 @@ print("\nReporte de clasificación:")
 print(classification_report(y_test, y_pred))
 
 
-# 8. Visualización del árbol
+# 8. Visualización del árbol simplificado
 plt.figure(figsize=(20,10))
-tree.plot_tree(
+plt.rcParams['font.size'] = 10  # mejora de texto
+plot_tree(
     model,
     feature_names=X.columns,
     class_names=["No Falla", "Falla"],
-    filled=True
+    filled=True,
+    rounded=True,
+    max_depth=3  # árbol simplificado SOLO para visualizar
 )
-plt.title("Árbol de decisión - Predicción de fallas")
+# Reducir grosor de bordes
+for artist in plt.gca().artists:
+    artist.set_linewidth(0.5)
+
+# Guardar archivos antes de cerrar
+plt.savefig("arbol_decision_simple.pdf")   # FORMATO VECTORIAL (IMPORTANTE)
+plt.savefig("arbol_decision_simple.png", dpi=300)
 plt.show()
 
+# 8b. Visualización del árbol tesis
+plt.figure(figsize=(20,10))
+plt.rcParams['font.size'] = 10  # mejora de texto
+plot_tree(
+    model,
+    feature_names=X.columns,
+    class_names=["No Falla", "Falla"],
+    filled=True,
+    rounded=True,
+)
+# Reducir grosor de bordes
+for artist in plt.gca().artists:
+    artist.set_linewidth(0.5)
+
+# Guardar archivos antes de cerrar
+plt.savefig("arbol_decision_tesis.pdf")  # FORMATO VECTORIAL (IMPORTANTE)
+plt.savefig("arbol_decision_tesis.png", dpi=300)
+plt.show()
 
 
 
