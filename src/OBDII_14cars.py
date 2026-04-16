@@ -254,7 +254,7 @@ print(X_final.var().sort_values())
 # ================================
 # LAB III — PREPARACIÓN FINAL
 # ================================
-
+# Variables finales
 X = X_final.copy()
 y = df_limpio["HAS_TROUBLE_CODE"].copy()
 
@@ -294,14 +294,13 @@ print("\nShape después de selección:", X_selected.shape)
 
 
 
-"""
 # 11. Se construye la ruta de la carpeta donde se guarda el archivo procesado.
 output_path = os.path.join(base_path, "data", "processed")
 os.makedirs(output_path, exist_ok=True)    # Crear carpeta processed si no existe
 
 file_output = os.path.join(    # Ruta completa y nombre del archivo a guardar
     output_path,
-    "exp1_14drivers_14cars_dailyRoutes_clean_with_dtc_featuresv2.csv"
+    "exp1_14drivers_14cars_dailyRoutes_clean_dataset_final.csv"
 )
 
 df_limpio.to_csv(file_output, index=False)
@@ -314,7 +313,7 @@ print("\nArchivo guardado en:", file_output)   # Con este codigo confirmo
 
 
 
-
+"""
 # Data splitting
 from sklearn.model_selection import train_test_split   # Dejar el split como preparación general
 
