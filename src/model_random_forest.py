@@ -4,8 +4,9 @@ import requests
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+from datetime import datetime
 
 # 1. Carga del dataset - Exploración de datos y validación
 ### Se usa ruta dinámica para lectura del archivo raíz, para que funcione en cualquier PC
@@ -44,6 +45,46 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
 
+# 5.1. Probabilidades y Elasticsearch
+y_prob = model.predict_proba(X_test)
+
+url = "http://localhost:9200/obd_predictions/_doc"
+
+limite_envio = min(1000, len(y_pred))
+
+#for i in range(len(y_pred)):
+for i in range(limite_envio):
+    real = int(y_test.iloc[i])
+    pred = int(y_pred[i])
+    prob = float(max(y_prob[i]))
+
+    # Clasificación tipo matriz de confusión
+    if real == 1 and pred == 1:
+        tipo = "TP"
+    elif real == 0 and pred == 0:
+        tipo = "TN"
+    elif real == 0 and pred == 1:
+        tipo = "FP"
+    else:
+        tipo = "FN"
+
+    documento = {
+        "real": real,
+        "prediccion": pred,
+        "resultado": "correcto" if real == pred else "error",
+        "tipo_error": tipo,
+        "probabilidad": prob,
+        "modelo": "RandomForest",
+        "timestamp": datetime.now().isoformat()
+    }
+
+    #requests.post(url, json=documento)
+    requests.post(url, json=documento, timeout=10)
+
+#print("\nResultados enriquecidos enviados a Elasticsearch.")
+print(f"\nResultados enriquecidos enviados a Elasticsearch: {limite_envio}")
+
+"""
 # 5.1. Enviar resultados a ELASTICSEARCH
 url = "http://localhost:9200/obd_predictions/_doc"
 
@@ -57,7 +98,7 @@ for i in range(len(y_pred)):
     response = requests.post(url, json=documento)
 
 print("\nResultados enviados a Elasticsearch.")
-
+"""
 
 # 6. Evaluación - Métricas
 print("\n=== RESULTADOS RANDOM FOREST ===")
