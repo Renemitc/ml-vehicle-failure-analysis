@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import requests
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -41,6 +42,21 @@ model.fit(X_train, y_train)
 
 # 5. Predicciones
 y_pred = model.predict(X_test)
+
+
+# 5.1. Enviar resultados a ELASTICSEARCH
+url = "http://localhost:9200/obd_predictions/_doc"
+
+for i in range(len(y_pred)):
+    documento = {
+        "real": int(y_test.iloc[i]),
+        "prediccion": int(y_pred[i]),
+        "resultado": "correcto" if int(y_test.iloc[i]) == int(y_pred[i]) else "error"
+    }
+
+    response = requests.post(url, json=documento)
+
+print("\nResultados enviados a Elasticsearch.")
 
 
 # 6. Evaluación - Métricas
