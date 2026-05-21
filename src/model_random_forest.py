@@ -50,7 +50,7 @@ y_prob = model.predict_proba(X_test)
 
 url = "http://localhost:9200/obd_predictions/_doc"
 
-limite_envio = min(1000, len(y_pred))
+limite_envio = min(10000, len(y_pred))
 
 #for i in range(len(y_pred)):
 for i in range(limite_envio):
