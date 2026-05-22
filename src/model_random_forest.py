@@ -98,6 +98,45 @@ for i in range(len(y_pred)):
     response = requests.post(url, json=documento)
 
 print("\nResultados enviados a Elasticsearch.")
+
+
+# 5.1. Probabilidades y Elasticsearch
+# Probabilidades
+y_prob = model.predict_proba(X_test)
+
+url = "http://localhost:9200/obd_predictions/_doc"
+
+for i in range(len(y_pred)):
+
+    real = int(y_test.iloc[i])
+    pred = int(y_pred[i])
+    prob = float(max(y_prob[i]))
+
+    # Clasificación tipo matriz de confusión
+    if real == 1 and pred == 1:
+        tipo = "TP"
+    elif real == 0 and pred == 0:
+        tipo = "TN"
+    elif real == 0 and pred == 1:
+        tipo = "FP"
+    else:
+        tipo = "FN"
+
+    documento = {
+        "real": real,
+        "prediccion": pred,
+        "resultado": "correcto" if real == pred else "error",
+        "tipo_error": tipo,
+        "probabilidad": prob,
+        "modelo": "RandomForest",
+        "timestamp": datetime.now().isoformat()
+    }
+
+    requests.post(url, json=documento)
+
+print("\nResultados enriquecidos enviados a Elasticsearch.")
+
+
 """
 
 # 6. Evaluación - Métricas
